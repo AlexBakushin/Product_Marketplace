@@ -1,0 +1,60 @@
+[
+  {
+    "model": "catalog.category",
+    "pk": 1,
+    "fields": {
+      "category_name": "�����",
+      "description": "�����"
+    }
+  },
+  {
+    "model": "catalog.category",
+    "pk": 2,
+    "fields": {
+      "category_name": "�����",
+      "description": "������"
+    }
+  },
+  {
+    "model": "catalog.category",
+    "pk": 3,
+    "fields": {
+      "category_name": "�����",
+      "description": "�����"
+    }
+  },
+  {
+    "model": "catalog.category",
+    "pk": 4,
+    "fields": {
+      "category_name": "��������",
+      "description": "��������"
+    }
+  },
+  {
+    "model": "catalog.product",
+    "pk": 1,
+    "fields": {
+      "product_name": "�������",
+      "description": "�������",
+      "preview": "",
+      "category": 1,
+      "price": 20,
+      "create_date": "2023-11-19T11:58:36Z",
+      "change_data": null
+    }
+  },
+  {
+    "model": "catalog.product",
+    "pk": 2,
+    "fields": {
+      "product_name": "�����",
+      "description": "�����",
+      "preview": "",
+      "category": 1,
+      "price": 22,
+      "create_date": "2023-11-19T12:05:49Z",
+      "change_data": null
+    }
+  }
+]
