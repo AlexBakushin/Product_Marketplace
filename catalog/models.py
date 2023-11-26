@@ -26,7 +26,7 @@ class Product(models.Model):
     change_data = models.DateTimeField(verbose_name='дата последнего изменения', **NULLABLE)
 
     def __str__(self):
-        return f'{self.id} {self.product_name} {self.price} {self.category}'
+        return f'{self.pk} {self.product_name}'
 
     class Meta:
         verbose_name = 'Продукт'          # В единственном числе
