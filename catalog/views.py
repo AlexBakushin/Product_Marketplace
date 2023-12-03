@@ -1,24 +1,16 @@
 from django.shortcuts import render
+from django.urls import reverse_lazy, reverse
 from catalog.models import Product
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from pytils.translit import slugify
 
 
-def product(request, pk):
-    product_pk_name = Product.objects.get(pk=pk)
-    product_name = str(product_pk_name)[2:].title()
-    context = {
-            'title': product_name,
-            'object': Product.objects.get(pk=pk)
-        }
-    return render(request, 'catalog/product.html', context)
+class ProductListView(ListView):
+    model = Product
 
 
-def home(request):
-    product_list = Product.objects.all()
-    context = {
-        'title': 'Главная',
-        'object_list': product_list
-    }
-    return render(request, 'catalog/home.html', context)
+class ProductDetailView(DetailView):
+    model = Product
 
 
 def contacts(request):
@@ -31,3 +23,40 @@ def contacts(request):
         message = request.POST.get('message')
         print(f'Имя: {name}\nТелефон: {phone}\nСообщение: {message}')
     return render(request, 'catalog/contacts.html', context)
+
+
+class ProductCreateView(CreateView):
+    model = Product
+    fields = ('product_name', 'description', 'preview', 'category', 'price')
+    success_url = reverse_lazy('catalog:home')
+
+    def form_valid(self, form):
+        if form.is_valid():
+            new_mat = form.save()
+            new_mat.slug = slugify(new_mat.product_name)
+            new_mat.save()
+
+        return super().form_valid(form)
+
+
+class ProductUpdateView(UpdateView):
+    model = Product
+    fields = ('product_name', 'description', 'preview', 'category', 'price')
+
+    # success_url = reverse_lazy('catalog:home')
+
+    def form_valid(self, form):
+        if form.is_valid():
+            new_mat = form.save()
+            new_mat.slug = slugify(new_mat.product_name)
+            new_mat.save()
+
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('catalog:product', args=[self.kwargs.get('slug')])
+
+
+class ProductDeleteView(DeleteView):
+    model = Product
+    success_url = reverse_lazy('catalog:home')

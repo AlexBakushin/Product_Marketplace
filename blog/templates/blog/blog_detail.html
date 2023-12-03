@@ -1,0 +1,30 @@
+{% extends 'catalog/base.html' %}
+{% load img_tag %}
+{% block content %}
+<div class="col-4 mx-auto d-flex justify-content-center align-items-center">
+    <div class="card mb-4 box-shadow">
+        <div class="card-header">
+            <img src="/media/{{ object.preview }}" style="width:380px; height:250px;"/>
+            <h3 class="my-0 font-weight-normal text-center">{{ object.title | title }} </h3>
+        </div>
+        <div class="card-body">
+            <p>{{object.body | title}} </p>
+            <p>{{ object.published_date }}
+            <p>
+            <p>Просмотры: {{object.view_count}}</p>
+            <p>
+                {% if object.is_published %}
+                Опубликовано
+                {% else %}
+                Не опубликовано
+                {% endif %}
+            </p>
+            <br>
+            <a class="btn btn-outline-primary" href="{% url 'blog:edit' object.slug %}">Редактировать запись</a>
+            <br>
+            <a href="{% url 'blog:delete' object.slug %}" type="button"
+               class="btn btn-sm btn-outline-danger">Удалить</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
