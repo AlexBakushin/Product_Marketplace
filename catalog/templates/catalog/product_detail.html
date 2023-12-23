@@ -20,6 +20,12 @@
             <a href="{% url 'catalog:delete_product' object.slug %}" type="button"
                class="btn btn-sm btn-outline-danger">Удалить</a>
         </div>
-    </div>
+        <ul class="list-unstyled mt-3 mb-4 text-start m-3 text-center">
+            {% for version in object.version_set.all %}
+            {% if version.is_active %}
+            <li>Версия: {{version.version_name}} {{version.version_number}}</li>
+            {% endif %}
+            {% endfor %}
+        </div>
 </div>
 {% endblock %}
