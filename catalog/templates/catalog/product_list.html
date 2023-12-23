@@ -4,10 +4,10 @@
 <p class="lead">Productstore - это отличный магазин продуктов</p>
 <div class="row text-center">
     <a class="btn btn-outline-primary" href="{% url 'catalog:create_product' %}">Добавить продукт</a>
-
+    <br>
     {% for object in object_list %}
-
     <div class="col-3">
+        <br>
         <div class="card mb-4 box-shadow">
             <div class="card-header">
                 <h4 class="my-0 font-weight-normal">{{ object.product_name | title }}</h4>
@@ -17,6 +17,7 @@
                 <h1 class="card-title pricing-card-title">{{object.price}} $</h1>
                 <ul class="list-unstyled mt-3 mb-4 text-start m-3 text-center">
                 </ul>
+
                 <a href="{% url 'catalog:product' object.slug %}" type="button"
                    class="btn btn-lg btn-block btn-outline-primary">Посмотреть</a>
                 <a href="{% url 'catalog:update_product' object.slug %}" type="button"
@@ -25,6 +26,11 @@
                    class="btn btn-lg btn-block btn-outline-danger">Удалить</a>
                 <button type="button" class="btn btn-lg btn-block btn-outline-primary">Купить</button>
             </div>
+            {% for version in object.version_set.all %}
+                        {% if version.is_active %}
+                            <p>Версия: {{version.version_name}} {{version.version_number}}</p>
+                        {% endif %}
+                {% endfor %}
         </div>
     </div>
     {% endfor %}
