@@ -3,8 +3,9 @@ from django.urls import reverse_lazy, reverse
 from django.forms import inlineformset_factory
 from catalog.forms import ProductForm, VersionForm
 from catalog.models import Product, Version
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from pytils.translit import slugify
+from django.db import transaction
 
 
 class ProductListView(ListView):
@@ -46,14 +47,19 @@ class ProductUpdateView(UpdateView):
     form_class = ProductForm
 
     def form_valid(self, form):
+        """Сохранение данных из формсета"""
         formset = self.get_context_data()['formset']
-        self.object = form.save()
-        if form.is_valid():
-            formset.instance = self.object
-            formset.save()
-            new_mat = form.save()
-            new_mat.slug = slugify(new_mat.product_name)
-            new_mat.save()
+        if formset is None:
+            return super().form_valid(form)
+        with transaction.atomic():
+            if form.is_valid():
+                new_mat = form.save()
+                new_mat.slug = slugify(new_mat.product_name)
+                new_mat.save()
+                self.object = form.save()
+                if formset.is_valid():
+                    formset.instance = self.object
+                    formset.save()
 
         return super().form_valid(form)
 
@@ -62,7 +68,8 @@ class ProductUpdateView(UpdateView):
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
-        VersionFormset = inlineformset_factory(Product, Version, form=VersionForm, extra=1)
+        context_data['version'] = self.object.version_set.filter(is_active=True).first(),
+        VersionFormset = inlineformset_factory(self.model, Version, form=VersionForm, extra=1)
         if self.request.method == 'POST':
             context_data['formset'] = VersionFormset(self.request.POST, instance=self.object)
         else:
@@ -73,5 +80,4 @@ class ProductUpdateView(UpdateView):
 class ProductDeleteView(DeleteView):
     model = Product
     success_url = reverse_lazy('catalog:home')
-
 

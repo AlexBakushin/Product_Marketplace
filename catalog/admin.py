@@ -22,4 +22,4 @@ class BlogAdmin(admin.ModelAdmin):
 
 @admin.register(Version)
 class VersionAdmin(admin.ModelAdmin):
-    list_display = ('version_number', 'version_name')
+    list_display = ('version_number', 'version_name', 'product')

@@ -41,3 +41,8 @@ class VersionForm(forms.ModelForm):
         fields = '__all__'
         exclude = ('product',)
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            if field_name != 'is_active':
+                field.widget.attrs['class'] = 'form-control'

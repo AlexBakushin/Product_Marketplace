@@ -1,4 +1,6 @@
 from django.db import models
+from django.dispatch import receiver
+from django.db.models.signals import post_save
 
 NULLABLE = {'blank': True, 'null': True}  # шаблон для необязательного элемента
 
@@ -34,15 +36,20 @@ class Product(models.Model):
 
 
 class Version(models.Model):
-    product_name = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='продукт')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='продукт')
     version_number = models.IntegerField(verbose_name='номер версии')
     version_name = models.CharField(max_length=100, verbose_name='название версии')
     is_active = models.BooleanField(default=True, verbose_name='текушая версия')
 
     def __str__(self):
-        return f'{self.version_number} {self.version_name}'
+        return f'{self.version_name}'
 
     class Meta:
         verbose_name = 'Версию'  # В единственном числе
         verbose_name_plural = 'Версии'  # Во множественном числе
 
+
+@receiver(post_save, sender=Version)
+def set_current_version(sender, instance, **kwargs):
+    if instance.is_active:
+        Version.objects.filter(product=instance.product).exclude(pk=instance.pk).update(is_active=False)
