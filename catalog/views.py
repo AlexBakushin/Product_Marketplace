@@ -11,9 +11,19 @@ from django.db import transaction
 class ProductListView(ListView):
     model = Product
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Главная'
+        return context
+
 
 class ProductDetailView(DetailView):
     model = Product
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = self.object.product_name
+        return context
 
 
 def contacts(request):
@@ -40,6 +50,11 @@ class ProductCreateView(CreateView):
             new_mat.save()
 
         return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Регистрация продукта'
+        return context
 
 
 class ProductUpdateView(UpdateView):
@@ -70,6 +85,7 @@ class ProductUpdateView(UpdateView):
         context_data = super().get_context_data(**kwargs)
         context_data['version'] = self.object.version_set.filter(is_active=True).first(),
         VersionFormset = inlineformset_factory(self.model, Version, form=VersionForm, extra=1)
+        context_data['title'] = f'Изменение "{self.object.product_name}"'
         if self.request.method == 'POST':
             context_data['formset'] = VersionFormset(self.request.POST, instance=self.object)
         else:
@@ -80,4 +96,9 @@ class ProductUpdateView(UpdateView):
 class ProductDeleteView(DeleteView):
     model = Product
     success_url = reverse_lazy('catalog:home')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = f'Удаление "{self.object.product_name}"'
+        return context
 

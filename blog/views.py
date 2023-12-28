@@ -19,6 +19,11 @@ class BlogCreateView(CreateView):
 
         return super().form_valid(form)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Создание блога'
+        return context
+
 
 class BlogUpdateView(UpdateView):
     model = Blog
@@ -35,6 +40,11 @@ class BlogUpdateView(UpdateView):
     def get_success_url(self):
         return reverse('blog:view', args=[self.kwargs.get('slug')])
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = f'Изменение "{self.object.title}"'
+        return context
+
 
 class BlogListView(ListView):
     model = Blog
@@ -43,6 +53,11 @@ class BlogListView(ListView):
         queryset = super().get_queryset(*args, **kwargs)
         queryset = queryset.filter(is_published=True)
         return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Блог'
+        return context
 
 
 class BlogDetailView(DetailView):
@@ -54,10 +69,20 @@ class BlogDetailView(DetailView):
         self.object.save()
         return self.object
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = self.object.title
+        return context
+
 
 class BlogDeleteView(DeleteView):
     model = Blog
     success_url = reverse_lazy('blog:list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = f'Удаление "{self.object.title}"'
+        return context
 
 
 def toggle_activity(request, slug):
@@ -69,3 +94,5 @@ def toggle_activity(request, slug):
 
     blog_item.save()
     return redirect(reverse('blog:list'))
+
+
