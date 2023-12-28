@@ -3,58 +3,82 @@
     "model": "catalog.category",
     "pk": 1,
     "fields": {
-      "category_name": "�����",
-      "description": "�����"
+      "category_name": "Фрукты",
+      "description": "Фрукты"
     }
   },
   {
     "model": "catalog.category",
     "pk": 2,
     "fields": {
-      "category_name": "�����",
-      "description": "������"
-    }
-  },
-  {
-    "model": "catalog.category",
-    "pk": 3,
-    "fields": {
-      "category_name": "�����",
-      "description": "�����"
-    }
-  },
-  {
-    "model": "catalog.category",
-    "pk": 4,
-    "fields": {
-      "category_name": "��������",
-      "description": "��������"
+      "category_name": "Овощи",
+      "description": "Овощт"
     }
   },
   {
     "model": "catalog.product",
     "pk": 1,
     "fields": {
-      "product_name": "�������",
-      "description": "�������",
-      "preview": "",
-      "category": 1,
-      "price": 20,
-      "create_date": "2023-11-19T11:58:36Z",
-      "change_data": null
+      "product_name": "яблоко",
+      "description": "яблоко",
+      "preview": "product/apple_cmwo8Vm.jpg",
+      "category": 2,
+      "price": 5,
+      "create_date": "2023-12-28T04:26:45.990Z",
+      "change_data": null,
+      "slug": "yabloko"
     }
   },
   {
     "model": "catalog.product",
     "pk": 2,
     "fields": {
-      "product_name": "�����",
-      "description": "�����",
-      "preview": "",
+      "product_name": "томат",
+      "description": "томат",
+      "preview": "product/tomato_Ekh0bB2.jpg",
       "category": 1,
-      "price": 22,
-      "create_date": "2023-11-19T12:05:49Z",
-      "change_data": null
+      "price": 7,
+      "create_date": "2023-12-28T04:28:53.415Z",
+      "change_data": null,
+      "slug": "tomat"
+    }
+  },
+  {
+    "model": "catalog.product",
+    "pk": 3,
+    "fields": {
+      "product_name": "рис",
+      "description": "рис",
+      "preview": "product/rise_DCZ5G0E.jpg",
+      "category": 1,
+      "price": 3,
+      "create_date": "2023-12-28T04:27:19.743Z",
+      "change_data": null,
+      "slug": "ris"
+    }
+  },
+  {
+    "model": "catalog.product",
+    "pk": 4,
+    "fields": {
+      "product_name": "картошка",
+      "description": "картошка",
+      "preview": "product/potato_2WCqXHz.jpg",
+      "category": 1,
+      "price": 4,
+      "create_date": "2023-12-28T04:27:40.194Z",
+      "change_data": null,
+      "slug": "kartoshka"
+    }
+  },
+  {
+    "model": "catalog.version",
+    "pk": 1,
+    "fields": {
+      "product": 2,
+      "version_number": 1,
+      "version_name": "первая",
+      "is_active": true
     }
   }
 ]
