@@ -1,5 +1,7 @@
 from django.contrib import admin
+# noinspection PyUnresolvedReferences
 from blog.models import Blog
+# noinspection PyUnresolvedReferences
 from catalog.models import Product, Category, Version
 
 
