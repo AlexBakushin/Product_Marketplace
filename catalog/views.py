@@ -44,6 +44,9 @@ class ProductCreateView(CreateView):
     success_url = reverse_lazy('catalog:home')
 
     def form_valid(self, form):
+        self.object = form.save()
+        self.object.seller = self.request.user
+        self.object.save()
         if form.is_valid():
             new_mat = form.save()
             new_mat.slug = slugify(new_mat.product_name)

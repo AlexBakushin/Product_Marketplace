@@ -1,6 +1,7 @@
 from django.db import models
 from django.dispatch import receiver
 from django.db.models.signals import post_save
+from django.conf import settings
 
 NULLABLE = {'blank': True, 'null': True}  # шаблон для необязательного элемента
 
@@ -26,6 +27,8 @@ class Product(models.Model):
     create_date = models.DateTimeField(auto_now=True, verbose_name='дата создания')
     change_data = models.DateTimeField(verbose_name='дата последнего изменения', **NULLABLE)
     slug = models.CharField(max_length=150, verbose_name='slug', **NULLABLE)
+
+    seller = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, **NULLABLE, verbose_name='продавец')
 
     def __str__(self):
         return f'{self.slug} {self.product_name}'
