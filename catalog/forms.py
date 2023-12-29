@@ -36,7 +36,7 @@ class ProductForm(StyleFormMixin, forms.ModelForm):  # Форма под соз�
         return cleaned_data
 
 
-class VersionForm(StyleFormMixin, forms.ModelForm):
+class VersionForm(forms.ModelForm):
 
     class Meta:
         model = Version
