@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.shortcuts import render
 from django.urls import reverse_lazy, reverse
 from django.forms import inlineformset_factory
@@ -9,6 +9,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from pytils.translit import slugify
 from django.db import transaction
 from django.http import Http404
+
 
 
 class ProductListView(LoginRequiredMixin, ListView):
@@ -50,17 +51,19 @@ def contacts(request):
     return render(request, 'catalog/contacts.html', context)
 
 
-class ProductCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+class ProductCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Product
     form_class = ProductForm
     permission_required = 'catalog.add_product'
     success_url = reverse_lazy('catalog:home')
 
-    # def get_object(self, queryset=None):
-    #     self.object = super().get_object(queryset)
-    #     if self.request.user.is_staff:
-    #         raise Http404
-    #     return self.object
+    def test_func(self):
+        if self.request.user.is_superuser:
+            return True
+        elif self.request.user.is_staff:
+            return False
+        else:
+            return True
 
     def form_valid(self, form):
         self.object = form.save()
@@ -79,10 +82,10 @@ class ProductCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView)
         return context
 
 
-class ProductUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+class ProductUpdateView(LoginRequiredMixin, UpdateView):
     model = Product
     form_class = ProductForm
-    permission_required = 'catalog.change_product'
+
 
     def form_valid(self, form):
         """Сохранение данных из формсета"""
@@ -115,11 +118,12 @@ class ProductUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView)
             context_data['formset'] = VersionFormset(instance=self.object)
         return context_data
 
-    # def get_object(self, queryset=None):
-    #     self.object = super().get_object(queryset)
-    #     if self.object.seller != self.request.user and not self.request.user.is_staff:
-    #         raise Http404
-    #     return self.object
+    def get_object(self, queryset=None):
+        self.object = super().get_object(queryset)
+        if self.request.user == self.object.seller or self.request.user.is_staff:
+            return self.object
+        elif self.request.user.email != self.object.seller:
+            raise Http404
 
 
 class ProductDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
