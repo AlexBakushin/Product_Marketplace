@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.shortcuts import render
 from django.urls import reverse_lazy, reverse
 from django.forms import inlineformset_factory
@@ -8,21 +8,29 @@ from catalog.models import Product, Version
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from pytils.translit import slugify
 from django.db import transaction
+from django.http import Http404
 
 
-class ProductListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+
+class ProductListView(LoginRequiredMixin, ListView):
     model = Product
-    permission_required = ('catalog.view_product',)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Главная'
         return context
 
+    def get_queryset(self, *args, **kwargs):
+        queryset = super().get_queryset(*args, **kwargs)
+        queryset = queryset.filter(is_published=True)
+        if not self.request.user.is_staff:
+            queryset.filter(seller=self.request.user)
+        return queryset
+    # Прятать продукты без is_published
 
-class ProductDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
+
+class ProductDetailView(LoginRequiredMixin, DetailView):
     model = Product
-    permission_required = ('catalog.view_product',)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -43,11 +51,19 @@ def contacts(request):
     return render(request, 'catalog/contacts.html', context)
 
 
-class ProductCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+class ProductCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Product
     form_class = ProductForm
     permission_required = 'catalog.add_product'
     success_url = reverse_lazy('catalog:home')
+
+    def test_func(self):
+        if self.request.user.is_superuser:
+            return True
+        elif self.request.user.is_staff:
+            return False
+        else:
+            return True
 
     def form_valid(self, form):
         self.object = form.save()
@@ -66,10 +82,10 @@ class ProductCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView)
         return context
 
 
-class ProductUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+class ProductUpdateView(LoginRequiredMixin, UpdateView):
     model = Product
     form_class = ProductForm
-    permission_required = 'catalog.change_product'
+
 
     def form_valid(self, form):
         """Сохранение данных из формсета"""
@@ -101,6 +117,13 @@ class ProductUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView)
         else:
             context_data['formset'] = VersionFormset(instance=self.object)
         return context_data
+
+    def get_object(self, queryset=None):
+        self.object = super().get_object(queryset)
+        if self.request.user == self.object.seller or self.request.user.is_staff:
+            return self.object
+        elif self.request.user.email != self.object.seller:
+            raise Http404
 
 
 class ProductDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
