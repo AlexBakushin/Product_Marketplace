@@ -11,7 +11,6 @@ from django.db import transaction
 from django.http import Http404
 
 
-
 class ProductListView(LoginRequiredMixin, ListView):
     model = Product
 
@@ -22,11 +21,13 @@ class ProductListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self, *args, **kwargs):
         queryset = super().get_queryset(*args, **kwargs)
-        queryset = queryset.filter(is_published=True)
         if not self.request.user.is_staff:
-            queryset.filter(seller=self.request.user)
-        return queryset
-    # Прятать продукты без is_published
+            queryset_pub = queryset.filter(is_published=True)
+            queryset_sub = queryset.filter(seller=self.request.user)
+            queryset = queryset_pub.union(queryset_sub)
+            return queryset
+        else:
+            return queryset
 
 
 class ProductDetailView(LoginRequiredMixin, DetailView):
