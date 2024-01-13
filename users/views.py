@@ -1,4 +1,6 @@
 import random
+
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, UpdateView
 from django.urls import reverse_lazy, reverse
 from users.forms import UserRegisterForm, UserProfileForm
@@ -32,7 +34,7 @@ class RegisterView(UserIsNotAuthenticated, CreateView):
         return context
 
 
-class ProfileView(UpdateView):
+class ProfileView(LoginRequiredMixin, UpdateView):
     model = User
     form_class = UserProfileForm
     success_url = reverse_lazy('users:profile')

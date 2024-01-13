@@ -15,16 +15,16 @@
                 <li>- Продавец - {{object.seller|default:"ProductStore" }}</li>
                 <li>- {{ object.create_date }}</li>
             </ul>
-            {% if user.is_authenticated %}
+            {% if perms.catalog.change_product %}
             <a href="{% url 'catalog:update_product' object.slug %}" type="button"
-                   class="btn btn-lg btn-block btn-outline-primary">Редактировать</a>
-            <a href="{% url 'catalog:delete_product' object.slug %}" type="button"
-                   class="btn btn-lg btn-block btn-outline-danger">Удалить</a>
-            <button type="button" class="btn btn-lg btn-block btn-outline-success">Купить</button>
-            {% else %}
-            <a href="{% url 'users:login'%}" type="button"
-                   class="btn btn-lg btn-block btn-outline-success">Купить</a>
+               class="btn btn-lg btn-block btn-outline-primary">Редактировать</a>
             {% endif %}
+            {% if perms.catalog.delete_product %}
+            <a href="{% url 'catalog:delete_product' object.slug %}" type="button"
+               class="btn btn-lg btn-block btn-outline-danger">Удалить</a>
+            {% endif %}
+            <button type="button" class="btn btn-lg btn-block btn-outline-success">Купить</button>
+
         </div>
         <ul class="list-unstyled mt-3 mb-4 text-start m-3 text-center">
             {% for version in object.version_set.all %}
@@ -32,6 +32,6 @@
             <li>Версия: {{version.version_name}} {{version.version_number}}</li>
             {% endif %}
             {% endfor %}
-        </div>
+    </div>
 </div>
 {% endblock %}

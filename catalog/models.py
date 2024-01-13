@@ -26,7 +26,7 @@ class Product(models.Model):
     price = models.IntegerField(verbose_name='цена')
     create_date = models.DateTimeField(auto_now=True, verbose_name='дата создания')
     change_data = models.DateTimeField(verbose_name='дата последнего изменения', **NULLABLE)
-    slug = models.CharField(max_length=150, verbose_name='slug', **NULLABLE)
+    slug = models.CharField(max_length=150, verbose_name='slug')
 
     seller = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, **NULLABLE, verbose_name='продавец')
 
