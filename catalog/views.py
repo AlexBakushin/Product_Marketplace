@@ -1,3 +1,5 @@
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.shortcuts import render
 from django.urls import reverse_lazy, reverse
 from django.forms import inlineformset_factory
@@ -8,8 +10,9 @@ from pytils.translit import slugify
 from django.db import transaction
 
 
-class ProductListView(ListView):
+class ProductListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = Product
+    permission_required = ('catalog.view_product',)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -17,8 +20,9 @@ class ProductListView(ListView):
         return context
 
 
-class ProductDetailView(DetailView):
+class ProductDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     model = Product
+    permission_required = ('catalog.view_product',)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -26,6 +30,7 @@ class ProductDetailView(DetailView):
         return context
 
 
+@login_required
 def contacts(request):
     context = {
         'title': 'Контакты'
@@ -38,9 +43,10 @@ def contacts(request):
     return render(request, 'catalog/contacts.html', context)
 
 
-class ProductCreateView(CreateView):
+class ProductCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Product
     form_class = ProductForm
+    permission_required = 'catalog.add_product'
     success_url = reverse_lazy('catalog:home')
 
     def form_valid(self, form):
@@ -60,9 +66,10 @@ class ProductCreateView(CreateView):
         return context
 
 
-class ProductUpdateView(UpdateView):
+class ProductUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Product
     form_class = ProductForm
+    permission_required = 'catalog.change_product'
 
     def form_valid(self, form):
         """Сохранение данных из формсета"""
@@ -96,9 +103,10 @@ class ProductUpdateView(UpdateView):
         return context_data
 
 
-class ProductDeleteView(DeleteView):
+class ProductDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = Product
     success_url = reverse_lazy('catalog:home')
+    permission_required = 'catalog.delete_product'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
