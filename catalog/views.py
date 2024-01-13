@@ -8,21 +8,28 @@ from catalog.models import Product, Version
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from pytils.translit import slugify
 from django.db import transaction
+from django.http import Http404
 
 
-class ProductListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+class ProductListView(LoginRequiredMixin, ListView):
     model = Product
-    permission_required = ('catalog.view_product',)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Главная'
         return context
 
+    def get_queryset(self, *args, **kwargs):
+        queryset = super().get_queryset(*args, **kwargs)
+        queryset = queryset.filter(is_published=True)
+        if not self.request.user.is_staff:
+            queryset.filter(seller=self.request.user)
+        return queryset
+    # Прятать продукты без is_published
 
-class ProductDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
+
+class ProductDetailView(LoginRequiredMixin, DetailView):
     model = Product
-    permission_required = ('catalog.view_product',)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -48,6 +55,12 @@ class ProductCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView)
     form_class = ProductForm
     permission_required = 'catalog.add_product'
     success_url = reverse_lazy('catalog:home')
+
+    # def get_object(self, queryset=None):
+    #     self.object = super().get_object(queryset)
+    #     if self.request.user.is_staff:
+    #         raise Http404
+    #     return self.object
 
     def form_valid(self, form):
         self.object = form.save()
@@ -101,6 +114,12 @@ class ProductUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView)
         else:
             context_data['formset'] = VersionFormset(instance=self.object)
         return context_data
+
+    # def get_object(self, queryset=None):
+    #     self.object = super().get_object(queryset)
+    #     if self.object.seller != self.request.user and not self.request.user.is_staff:
+    #         raise Http404
+    #     return self.object
 
 
 class ProductDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):

@@ -1,3 +1,4 @@
+import random
 from django.db import models
 from django.dispatch import receiver
 from django.db.models.signals import post_save
@@ -26,7 +27,9 @@ class Product(models.Model):
     price = models.IntegerField(verbose_name='цена')
     create_date = models.DateTimeField(auto_now=True, verbose_name='дата создания')
     change_data = models.DateTimeField(verbose_name='дата последнего изменения', **NULLABLE)
-    slug = models.CharField(max_length=150, verbose_name='slug')
+    slug = models.CharField(max_length=150, unique=True,
+                            default=''.join([str(random.randint(0, 9)) for _ in range(12)]), verbose_name='slug')
+    is_published = models.BooleanField(default=False, verbose_name='Статус публикации')
 
     seller = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, **NULLABLE, verbose_name='продавец')
 
