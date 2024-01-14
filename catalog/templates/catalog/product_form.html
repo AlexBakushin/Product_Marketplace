@@ -4,7 +4,6 @@
 <div class="col-12">
     <form class="row" method="post" enctype="multipart/form-data">
 
-        {% if user == object.seller or user.is_active %}
         <div class="col-4">
             <div class="card mb-4 box-shadow">
                 <div class="card-header">
@@ -22,32 +21,6 @@
                 </button>
             </div>
         </div>
-
-        {% elif user.is_staff %}
-        <div class="col-4">
-            <div class="card mb-4 box-shadow">
-                <div class="card-header">
-                    <h3 class="card-title">Настройки продукта</h3>
-                </div>
-                {% csrf_token %}
-
-
-                <div>
-                    <h6>Опубликовать</h6>
-                    <input type="checkbox" id="is_published" {% if is_published %} Опубликовать {% endif %}>
-                </div>
-
-
-                <button type="submit" class="btn btn-lg btn-block btn-outline-primary">
-                    {% if object %}
-                    Обновить
-                    {% else %}
-                    Создать
-                    {% endif %}
-                </button>
-            </div>
-        </div>
-        {% endif %}
 
         {% if user.is_superuser or user == object.seller %}
         <div class="col-4">

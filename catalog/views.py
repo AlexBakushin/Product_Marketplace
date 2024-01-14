@@ -3,12 +3,13 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.shortcuts import render
 from django.urls import reverse_lazy, reverse
 from django.forms import inlineformset_factory
-from catalog.forms import ProductForm, VersionForm
+from catalog.forms import ProductForm, VersionForm, ModeratorProductForm
 from catalog.models import Product, Version
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from pytils.translit import slugify
 from django.db import transaction
 from django.http import Http404
+from django.http import HttpResponse
 
 
 class ProductListView(LoginRequiredMixin, ListView):
@@ -87,6 +88,13 @@ class ProductUpdateView(LoginRequiredMixin, UpdateView):
     model = Product
     form_class = ProductForm
 
+    def get_form_class(self):
+        if self.request.user == self.object.seller:
+            return ProductForm
+        elif self.request.user.groups.filter(name='moderator').exists():
+            return ModeratorProductForm
+        else:
+            return ProductForm
 
     def form_valid(self, form):
         """Сохранение данных из формсета"""
@@ -136,4 +144,3 @@ class ProductDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView)
         context = super().get_context_data(**kwargs)
         context['title'] = f'Удаление "{self.object.product_name}"'
         return context
-

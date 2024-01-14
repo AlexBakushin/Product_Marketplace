@@ -36,8 +36,19 @@ class ProductForm(StyleFormMixin, forms.ModelForm):  # Форма под соз�
         return cleaned_data
 
 
-class VersionForm(forms.ModelForm):
+class ModeratorProductForm(StyleFormMixin, forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = ('description', 'category', 'is_published')
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs['class'] = 'form-control'
+        self.fields["is_published"].widget.attrs['class'] = 'form-check-input'
+
+
+class VersionForm(forms.ModelForm):
     class Meta:
         model = Version
         fields = '__all__'
