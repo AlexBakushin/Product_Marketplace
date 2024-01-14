@@ -15,6 +15,11 @@
                 <li>- Описание - {{object.description|slice:":100"}}</li>
                 <li>- Категория - {{object.category|title}}</li>
                 <li>- Продавец - {{object.seller|default:"ProductStore" }}</li>
+                {% if object.is_published %}
+                <li>- Опубликовано</li>
+                {% else %}
+                <li>- Не опубликовано</li>
+                {% endif %}
                 <li>- {{ object.create_date }}</li>
             </ul>
 
