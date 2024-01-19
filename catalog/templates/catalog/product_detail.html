@@ -13,8 +13,16 @@
             <h1 class="card-title pricing-card-title">{{object.price}} $</h1>
             <ul class="list-unstyled mt-3 mb-4 text-start m-3 text-center">
                 <li>- Описание - {{object.description|slice:":100"}}</li>
-                <li>- Категория - {{object.category|title}}</li>
-                <li>- Продавец - {{object.seller|default:"ProductStore" }}</li>
+                <li>
+                    {% for cat in category %}
+                    - Категория - {{cat|title}}
+                    {%endfor%}
+                </li>
+                <li>
+                    {% for sel in seller %}
+                    - Продавец - {{sel|default:"ProductStore" }}
+                    {% endfor %}
+                </li>
                 {% if object.is_published %}
                 <li>- Опубликовано</li>
                 {% else %}
