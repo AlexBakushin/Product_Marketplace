@@ -9,6 +9,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from pytils.translit import slugify
 from django.db import transaction
 from django.http import Http404
+from .services import get_caches_sellers_for_product, get_caches_categories_for_product
 from django.http import HttpResponse
 
 
@@ -37,6 +38,8 @@ class ProductDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = self.object.product_name
+        context['seller'] = get_caches_sellers_for_product(self.object.slug)
+        context['category'] = get_caches_categories_for_product(self.object.slug)
         return context
 
 
