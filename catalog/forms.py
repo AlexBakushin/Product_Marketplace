@@ -10,6 +10,7 @@ class StyleFormMixin:
 
 
 class ProductForm(StyleFormMixin, forms.ModelForm):  # Форма под создание екземпляра продукта
+    banned_names = ['казино', 'криптовалюта', 'крипта', 'биржа', 'дешево', 'бесплатно', 'обман', 'полиция', 'радар']
 
     class Meta:
         model = Product
@@ -19,18 +20,14 @@ class ProductForm(StyleFormMixin, forms.ModelForm):  # Форма под соз�
 
     def clean_product_name(self):
         cleaned_data = self.cleaned_data['product_name']
-        banned_names = ['казино', 'криптовалюта', 'крипта', 'биржа', 'дешево', 'бесплатно', 'обман', 'полиция', 'радар']
-
-        if cleaned_data.lower() in banned_names:
+        if cleaned_data.lower() in self.banned_names:
             raise forms.ValidationError('Название является не корректным')
 
         return cleaned_data
 
     def clean_description(self):
         cleaned_data = self.cleaned_data['description']
-        banned_names = ['казино', 'криптовалюта', 'крипта', 'биржа', 'дешево', 'бесплатно', 'обман', 'полиция', 'радар']
-
-        if cleaned_data.lower() in banned_names:
+        if cleaned_data.lower() in self.banned_names:
             raise forms.ValidationError('Описание является не корректным')
 
         return cleaned_data
